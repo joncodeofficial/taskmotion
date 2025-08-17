@@ -33,7 +33,7 @@ export const TaskDrawer = () => {
   return (
     <DrawerModal open={isOpen} onClose={() => setIsOpen(false)}>
       <div
-        className='w-full lg:max-w-[750px] lg:w-1/2 lg:min-w-[650px] h-full lg:min-h-max lg:h-[60%] bg-neutral-100 dark:bg-background rounded-md shadow-lg border border-border mx-auto mt-16 lg:mt-28'
+        className='w-full lg:max-w-[900px] lg:w-1/2 lg:min-w-[650px] h-full lg:min-h-max lg:h-[70%] bg-neutral-100 dark:bg-background rounded-md shadow-lg border border-border mx-auto mt-16 lg:mt-28'
         onClick={(e) => e.stopPropagation()}
       >
         <div className='flex items-center justify-between p-4 border-b'>
