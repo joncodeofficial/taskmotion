@@ -7,8 +7,11 @@ export const useLists = () => {
   const parseAuth = JSON.parse(authToken as string);
 
   const query = useQuery({
-    queryKey: ['lists', parseAuth?.email],
+    queryKey: ['lists', parseAuth.access_token],
     queryFn: () => getLists(parseAuth.access_token),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   return {
