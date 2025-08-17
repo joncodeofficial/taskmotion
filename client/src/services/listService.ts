@@ -9,10 +9,14 @@ const api = axios.create({
 // Function to get all lists for a user
 export const getLists = async (sessionToken: string): Promise<ListProps[]> => {
   try {
-    const { data: response } = await axios.get(`${getApiBaseUrl()}api/lists/${sessionToken}`);
+    const { data: response } = await axios.get(`${getApiBaseUrl()}api/lists`, {
+      headers: {
+        Authorization: `Bearer ${sessionToken}`,
+      },
+    });
     return response.data;
   } catch (error) {
-    throw new Error('Error inesperado al obtener las listas');
+    throw new Error('Unexpected error while fetching lists');
   }
 };
 

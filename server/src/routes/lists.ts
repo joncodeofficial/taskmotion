@@ -27,39 +27,46 @@ type JwtPayload = {
 };
 
 // GET A LIST OF USERS USING GOOGLE TOKEN
-listApp.get('/:token', async (c) => {
-  const token = c.req.param('token');
+listApp.get('/', async (c) => {
+  const authHeader = c.req.header('Authorization');
 
-  const decoded = jwtDecode<JwtPayload>(token);
-
-  const users = await getUserByEmail(c, decoded.user_metadata.email);
-
-  const user = users.data?.[0] as UserProps;
-
-  if (!user) {
-    const body = {
-      name: decoded.user_metadata.full_name,
-      email: decoded.user_metadata.email,
-      lists: [],
-    };
-
-    await getSupabase(c).from('users').insert(body).select();
-
-    return c.json({ data: [] }, 200);
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return c.json({ error: 'Unauthorized' }, 401);
   }
 
-  const lists = JSON.parse(user.lists.toString());
+  const token = authHeader.split(' ')[1];
 
-  const { data, error } = await getListInUser(c, lists);
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
 
-  if (error) return c.json({ error }, 400);
+    const users = await getUserByEmail(c, decoded.user_metadata.email);
+    const user = users.data?.[0] as UserProps;
 
-  const order = (data as ListProps[]).map((list) => ({
-    ...list,
-    tasks: list.tasks.sort((a, b) => (a.checked ? 1 : b.checked ? -1 : 0)),
-  }));
+    if (!user) {
+      const body = {
+        name: decoded.user_metadata.full_name,
+        email: decoded.user_metadata.email,
+        lists: [],
+      };
 
-  return c.json({ data: order }, 200);
+      await getSupabase(c).from('users').insert(body).select();
+      return c.json({ data: [] }, 200);
+    }
+
+    const lists = JSON.parse(user.lists.toString());
+
+    const { data, error } = await getListInUser(c, lists);
+    if (error) return c.json({ error }, 400);
+
+    const order = (data as ListProps[]).map((list) => ({
+      ...list,
+      tasks: list.tasks.sort((a, b) => (a.checked ? 1 : b.checked ? -1 : 0)),
+    }));
+
+    return c.json({ data: order }, 200);
+  } catch (err) {
+    return c.json({ error: 'Invalid token' }, 401);
+  }
 });
 
 // CREATE A NEW LIST
