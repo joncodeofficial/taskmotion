@@ -29,7 +29,7 @@ export const Dashboard = () => {
       return;
     }
     let stats = statsData.last7DaysStats;
-    if (e.currentTarget.dataset.type !== 'Week') stats = statsData.lastMonthStats;
+    if (e.currentTarget.dataset.type !== 'week') stats = statsData.lastMonthStats;
     setTotalCompleted(stats.reduce((acc, c) => acc + c.tasks, 0));
   };
 
