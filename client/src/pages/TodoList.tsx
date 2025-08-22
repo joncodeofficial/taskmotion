@@ -1,7 +1,7 @@
-import CreateTask from '@/components/CreateTask';
-import UserWelcome from '@/components/UserWelcome';
+import CreateTask from '@/features/tasks/components/CreateTask';
+import UserWelcome from '@/features/user/components/UserWelcome';
 import { Outlet } from 'react-router-dom';
-import { TaskDrawer } from '@/components/TaskDrawer';
+import { TaskDrawer } from '@/features/tasks/components/TaskDrawer';
 
 export const TodoList = () => {
   return (

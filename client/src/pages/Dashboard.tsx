@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { getListCount } from '@/utils/getListCount';
-import { Badge } from '@/components/ui/badge';
+import { getListCount } from '@/shared/utils/getListCount';
+import { Badge } from '@/shared/components/ui/badge';
 import { formatDistanceToNow } from 'date-fns';
-import { notificationsStyle } from '@/utils/notificationsUtils';
+import { notificationsStyle } from '@/shared/utils/notificationsUtils';
 import { Clock } from 'lucide-react';
-import { useNotifications } from '@/hooks/useNotification';
-import { UserAuth } from '@/context/AuthContext';
-import { useLists } from '@/hooks/useLists';
+import { useNotifications } from '@/shared/hooks/useNotification';
+import { UserAuth } from '@/app/context/AuthContext';
+import { useLists } from '@/features/lists/hooks/useLists';
 
 export const Dashboard = () => {
   const { lists } = useLists();

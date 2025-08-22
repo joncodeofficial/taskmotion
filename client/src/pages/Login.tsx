@@ -1,8 +1,14 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Modal } from '@/components/ui/modal';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
+import { Button } from '@/shared/components/ui/button';
+import { Modal } from '@/shared/components/ui/modal';
 import { useNavigate } from 'react-router-dom';
-import { UserAuth } from '@/context/AuthContext';
+import { UserAuth } from '@/app/context/AuthContext';
 
 const Login = () => {
   const { signInWithGoogle, signInWithGithub } = UserAuth();

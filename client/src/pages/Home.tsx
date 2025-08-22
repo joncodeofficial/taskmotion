@@ -1,6 +1,6 @@
-import Navbar from '@/components/home/Navbar';
-import Hero from '@/components/home/Hero';
-import Footer from '@/components/home/Footer';
+import Navbar from '@/features/home/components/Navbar';
+import Hero from '@/features/home/components/Hero';
+import Footer from '@/features/home/components/Footer';
 import { Outlet } from 'react-router-dom';
 const Home = () => {
   return (
