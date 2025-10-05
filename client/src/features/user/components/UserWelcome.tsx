@@ -8,15 +8,13 @@ const UserWelcome = () => {
 
   return (
     <div className='hidden lg:block'>
-      <h3 className='text-gray-600 dark:text-neutral-300 text-[17px]'>
+      <h3 className='text-gray-600 dark:text-neutral-300 text-lg font-light'>
         {getGreeting()} Today is {formatedDate}
       </h3>
-      <h1
-        className='text-gray-700 dark:text-neutral-200 
-        text-[1.8rem] font-medium mt-0.5 truncate
-      '
-      >
-        {listTitle ?? 'Loading...'}
+      <h1 className='text-3xl font-semibold text-gray-900 dark:text-white truncate'>
+        {listTitle || (
+          <span className='text-gray-400 dark:text-neutral-500 animate-pulse'>Loading...</span>
+        )}
       </h1>
     </div>
   );
