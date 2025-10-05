@@ -25,7 +25,7 @@ export const CreateInput = ({
   onChange,
   onSubmit,
   inputRef,
-  placeholder = 'Create...',
+  placeholder,
   shortcutKey,
   checked,
   onCheck,
@@ -64,14 +64,14 @@ export const CreateInput = ({
         type='text'
         ref={inputRef}
         placeholder={placeholder}
-        className='text-neutral-600 dark:text-neutral-50 px-2 outline-none w-full h-12 border-none focus-visible:ring-0 focus-visible:placeholder:text-neutral-400 dark:focus-visible:placeholder:text-neutral-100 rounded-none shadow-none'
+        className='text-neutral-600 dark:text-neutral-50 px-2 outline-none w-full h-12 border-none focus-visible:ring-0 focus-visible:placeholder:text-neutral-400 dark:focus-visible:placeholder:text-neutral-100 rounded-none shadow-none '
         onKeyDown={handleKeyPress}
         onChange={(e) => onChange(e.target.value.trimStart())}
         value={value}
       />
 
       {!isSmallDevice && shortcutKey && (
-        <ShortcutBadge keys={shortcutKey.toUpperCase()} className={`${value && 'opacity-0'}`} />
+        <ShortcutBadge keys={shortcutKey.toUpperCase()} className={`${value && 'hidden'}`} />
       )}
 
       {children}
