@@ -15,6 +15,7 @@ import { UserAuth } from '@/app/context/AuthContext';
 import { useUpdateNotifications } from '../../../../shared/hooks/useNotification';
 import { createNotification } from '@/shared/utils/createNotification';
 import { useLists, useUpdateList } from '@/features/lists/hooks/useLists';
+
 // Hook para manejar los handlers de la tarea
 export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTaskState>) => {
   const { listId } = useParams();
@@ -39,6 +40,11 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
     const updateTasks = [newTask, ...tasks];
     updateTaskAndLists(updateTasks);
   }, [task, listId, tasks]);
+
+  const handleCopyClipboard = useCallback(() => {
+    if (!listId) return;
+    navigator.clipboard.writeText(task.name);
+  }, [task, listId]);
 
   const handleMoveTo = useCallback(
     (listIdMove?: string) => {
@@ -209,5 +215,6 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
     handleTouchEnd,
     handleBlur,
     handleGenerateAIDescription,
+    handleCopyClipboard,
   };
 };

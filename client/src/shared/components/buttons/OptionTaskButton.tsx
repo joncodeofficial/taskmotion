@@ -1,4 +1,4 @@
-import { ArrowDownUp, Copy, EllipsisVertical } from 'lucide-react';
+import { ArrowDownUp, ClipboardCopy, Copy, EllipsisVertical } from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
@@ -16,9 +16,14 @@ import { useLists } from '@/features/lists/hooks/useLists';
 type OptionTaskButton = {
   handleDuplicate: () => void;
   handleMoveTo: (listIdMove?: string) => void;
+  handleCopyClipboard: () => void;
 };
 
-export const OptionTaskButton = ({ handleDuplicate, handleMoveTo }: OptionTaskButton) => {
+export const OptionTaskButton = ({
+  handleDuplicate,
+  handleMoveTo,
+  handleCopyClipboard,
+}: OptionTaskButton) => {
   const { lists } = useLists();
   const { listId } = useParams();
 
@@ -33,6 +38,11 @@ export const OptionTaskButton = ({ handleDuplicate, handleMoveTo }: OptionTaskBu
         <DropdownMenuItem onClick={handleDuplicate}>
           <Copy className='mr-2 h-4 w-4' />
           <span>Duplicate</span>
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleCopyClipboard}>
+          <ClipboardCopy className='mr-2 h-4 w-4' />
+          <span>Copy text</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuSub>
