@@ -6,6 +6,12 @@ const api = axios.create({
   baseURL: getApiBaseUrl(),
 });
 
+type ListServiceProps = {
+  body: ListProps;
+  listId: string;
+  email: string;
+};
+
 // Function to get all lists for a user
 export const getLists = async (sessionToken: string): Promise<ListProps[]> => {
   try {
@@ -20,13 +26,8 @@ export const getLists = async (sessionToken: string): Promise<ListProps[]> => {
   }
 };
 
-type CreateListProps = {
-  email: string;
-  body: ListProps;
-};
-
 // Function to create a new list
-export const createList = async ({ email, body }: CreateListProps): Promise<ListProps[]> => {
+export const createList = async ({ email, body }: Pick<ListServiceProps, 'email' | 'body'>): Promise<ListProps[]> => {
   try {
     const { data } = await api.post<{ data: ListProps[] }>(`api/lists/${email}`, body);
     return data.data;
@@ -35,13 +36,8 @@ export const createList = async ({ email, body }: CreateListProps): Promise<List
   }
 };
 
-type ListUpdateProps = {
-  listId: string;
-  body: ListProps;
-};
-
 // Function to update an existing list
-export const updateList = async ({ listId, body }: ListUpdateProps): Promise<void> => {
+export const updateList = async ({ listId, body }: Pick<ListServiceProps, 'listId' | 'body'>): Promise<void> => {
   try {
     await api.put(`api/lists/${listId}`, body);
   } catch {
@@ -49,12 +45,8 @@ export const updateList = async ({ listId, body }: ListUpdateProps): Promise<voi
   }
 };
 
-type DeleteListProps = {
-  listId: string;
-};
-
 // Function to delete a list
-export const deleteList = async ({ listId }: DeleteListProps): Promise<void> => {
+export const deleteList = async ({ listId }: Pick<ListServiceProps, 'listId'>): Promise<void> => {
   try {
     await api.delete(`api/lists/${listId}`);
   } catch (error) {
