@@ -39,24 +39,17 @@ export const Dashboard = () => {
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
         <Card className='bg-neutral-50 dark:bg-neutral-900'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
-            <CardTitle className='text-sm font-medium text-neutral-700 dark:text-neutral-50'>
-              Total Tasks
-            </CardTitle>
+            <CardTitle className='text-sm font-medium text-neutral-700 dark:text-neutral-50'>Total Tasks</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className='text-2xl font-bold text-neutral-700 dark:text-neutral-50'>
-              {statsData?.total || 0}
-            </div>
+            <div className='text-2xl font-bold text-neutral-700 dark:text-neutral-50'>{statsData?.total || 0}</div>
           </CardContent>
         </Card>
         <Card className='bg-neutral-50 dark:bg-neutral-900'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-50'>
               <span>Completed Tasks</span>
-              <Badge
-                text={`${statsData?.completedPercentage || 0}%`}
-                className='bg-green-500/10 text-green-500'
-              />
+              <Badge text={`${statsData?.completedPercentage || 0}%`} className='bg-green-500/10 text-green-500' />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -67,10 +60,7 @@ export const Dashboard = () => {
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-50'>
               <span>Pending Tasks</span>
-              <Badge
-                text={`${statsData?.pendingPercentage || 0}%`}
-                className='bg-yellow-500/10 text-yellow-500'
-              />
+              <Badge text={`${statsData?.pendingPercentage || 0}%`} className='bg-yellow-500/10 text-yellow-500' />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -81,10 +71,7 @@ export const Dashboard = () => {
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
             <CardTitle className='flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-50'>
               <span>Overdue Tasks</span>
-              <Badge
-                text={`${statsData?.overduePercentage || 0}%`}
-                className='bg-red-500/10 text-red-500'
-              />
+              <Badge text={`${statsData?.overduePercentage || 0}%`} className='bg-red-500/10 text-red-500' />
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -198,7 +185,7 @@ export const Dashboard = () => {
                   >
                     <div className='w-full'>
                       <div className='flex items-center justify-between'>
-                        <p className='text-neutral-700 dark:text-card-foreground font-medium text-xs lg:text-sm'>
+                        <p className='text-neutral-700 dark:text-card-foreground font-medium text-xs lg:text-sm line-clamp-2'>
                           {notification.message}
                         </p>
                         <Badge
