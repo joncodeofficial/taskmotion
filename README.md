@@ -29,3 +29,7 @@ We use pnpm with workspaces to manage this project as a monorepo, facilitating e
 ## License
 
 #### This project is licensed under the MIT License. For more details, see the [LICENSE](LICENSE) file.
+
+<!-- repo-keep-alive -->
+
+![keep-alive](https://dummyimage.com/1x1/000/000.png&text=.)
