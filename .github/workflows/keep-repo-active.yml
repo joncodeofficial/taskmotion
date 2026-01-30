@@ -2,8 +2,11 @@ name: Keep Repo Active
 
 on:
   schedule:
-    - cron: '0 0 1 * *' # Once per month
+    - cron: '0 0 1 * *'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   keep-repo-active:
