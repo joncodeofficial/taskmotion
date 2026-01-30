@@ -1,0 +1,29 @@
+name: Keep Repo Active
+
+on:
+  schedule:
+    - cron: '0 0 1 * *' # Once per month
+  workflow_dispatch:
+
+jobs:
+  keep-repo-active:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update invisible keep-alive badge
+        run: |
+          sed -i.bak \
+            's|!\[keep-alive\](.*)|![keep-alive](https://dummyimage.com/1x1/000/000.png?ts='"$(date +%s)"')|' \
+            README.md
+          rm README.md.bak
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add README.md
+          git commit -m "chore: keep repository active" || exit 0
+          git push
