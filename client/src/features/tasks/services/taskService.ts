@@ -17,6 +17,8 @@ export const createTask = async (body: {
   name: string;
   description: string;
   position: number;
+  checked: boolean;
+  date: string;
 }): Promise<TaskProps[]> => {
   const { data: response } = await api.post<{ data: TaskProps[] }>('api/tasks', body);
   return response.data;

@@ -50,12 +50,13 @@ const SortableList = () => {
   const handleDragEnd = ({ active, over }: handleDragEndProps) => {
     if (!listId) return;
     if (over && active.id !== over.id) {
+      const previousTasks = [...tasks];
       const activeIndex = tasks.findIndex(({ id }) => id === active.id);
       const overIndex = tasks.findIndex(({ id }) => id === over.id);
       const newOrder = arrayMove(tasks, activeIndex, overIndex);
       setTasks(newOrder);
-      const reorderItems = newOrder.map((task, index) => ({ id: task.id, position: index }));
-      reorderTasks.mutate(reorderItems);
+      const items = newOrder.map((task, index) => ({ id: task.id, position: index }));
+      reorderTasks.mutate({ items, previousTasks });
     }
     setActive(null);
     setIsDragging(false);

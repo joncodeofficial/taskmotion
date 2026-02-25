@@ -2,7 +2,6 @@
 import { TaskProps } from '@shared/types/task.types';
 import { useTaskState } from './useTaskState';
 import { useParams } from 'react-router-dom';
-import { useTaskStore } from '@/features/tasks/store/taskStore';
 import { useModalStore } from '@/features/tasks/store/modalStore';
 import { ChangeEvent, useCallback } from 'react';
 import { MAX_TIMEOUT } from '@/shared/constants/base';
@@ -13,11 +12,12 @@ import { UserAuth } from '@/app/context/AuthContext';
 import { useUpdateNotifications } from '../../../../shared/hooks/useNotification';
 import { createNotification } from '@/shared/utils/createNotification';
 import { useUpdateTask, useDeleteTask, useDuplicateTask, useMoveTask } from '../useTasks';
+import { nanoid } from 'nanoid';
+import { SIZE_ID } from '@/shared/constants/base';
 
 // Hook para manejar los handlers de la tarea
 export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTaskState>) => {
   const { listId } = useParams();
-  const { deleteTask: deleteTaskFromStore } = useTaskStore();
   const { setIsOpen, setTask } = useModalStore();
   const { email } = UserAuth().user;
   const updateNotifications = useUpdateNotifications();
@@ -28,7 +28,8 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
 
   const handleDuplicate = useCallback(() => {
     if (!listId) return;
-    duplicateTaskMutation.mutate(task.id);
+    const tempTask = { ...task, id: nanoid(SIZE_ID) };
+    duplicateTaskMutation.mutate({ taskId: task.id, tempTask });
   }, [task, listId]);
 
   const handleCopyClipboard = useCallback(() => {
@@ -39,7 +40,6 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
   const handleMoveTo = useCallback(
     (listIdMove?: string) => {
       if (!listId || !listIdMove) return;
-      deleteTaskFromStore(task.id);
       moveTaskMutation.mutate({ taskId: task.id, targetListId: listIdMove });
     },
     [task, listId]
@@ -50,7 +50,6 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
       if (!listId) return;
       e.preventDefault();
       e.stopPropagation();
-      deleteTaskFromStore(task.id);
       deleteTaskMutation.mutate(task.id);
 
       const body = createNotification({
