@@ -31,10 +31,10 @@ export const createNewList = async (c: ctx, body: ListProps) => {
   return getSupabase(c).from('lists').insert(body).select();
 };
 
-export const updateList = async (c: ctx, listId: string, body: ListProps) => {
-  let newData = { tasks: body.tasks } as ListProps;
+export const updateList = async (c: ctx, listId: string, body: Pick<ListProps, 'name'>) => {
+  const newData: Record<string, unknown> = {};
 
-  if (body.name) newData = { ...newData, name: body.name };
+  if (body.name) newData.name = body.name;
 
   return getSupabase(c).from('lists').update(newData).eq('listId', listId);
 };

@@ -3,6 +3,7 @@ import { getSupabase, supabaseMiddleware } from '@/middleware/supabase';
 import { zListValidator } from '@/validators/list.validator';
 import { UserProps } from '@/types/user.types';
 import { ListProps } from '@shared/types/list.types';
+import { TaskProps } from '@shared/types/task.types';
 import { jwtDecode } from 'jwt-decode';
 import {
   createNewList,
@@ -58,9 +59,30 @@ listApp.get('/', async (c) => {
     const { data, error } = await getListInUser(c, lists);
     if (error) return c.json({ error }, 400);
 
+    // Fetch tasks from the tasks table for all lists
+    const listIds = (data as ListProps[]).map((l) => l.listId).filter(Boolean) as string[];
+    const { data: allTasks, error: tasksError } = await getSupabase(c)
+      .from('tasks')
+      .select('*')
+      .in('list_id', listIds)
+      .order('position', { ascending: true });
+
+    if (tasksError) return c.json({ error: tasksError }, 400);
+
+    const tasksByList = (allTasks as TaskProps[]).reduce(
+      (acc, task) => {
+        if (!acc[task.list_id]) acc[task.list_id] = [];
+        acc[task.list_id].push(task);
+        return acc;
+      },
+      {} as Record<string, TaskProps[]>
+    );
+
     const order = (data as ListProps[]).map((list) => ({
       ...list,
-      tasks: list.tasks.sort((a, b) => (a.checked ? 1 : b.checked ? -1 : 0)),
+      tasks: (tasksByList[list.listId as string] ?? []).sort((a, b) =>
+        a.checked ? 1 : b.checked ? -1 : 0
+      ),
     }));
 
     return c.json({ data: order }, 200);
@@ -89,9 +111,9 @@ listApp.post('/:email', zListValidator, async (c) => {
   return c.json({ data });
 });
 
-// UPDATE A LIST
+// UPDATE A LIST (name only)
 listApp.put('/:listId', async (c) => {
-  const body = (await c.req.json()) as ListProps;
+  const body = (await c.req.json()) as Pick<ListProps, 'name'>;
   const listId = c.req.param('listId');
 
   const { data, error } = await updateList(c, listId, body);
