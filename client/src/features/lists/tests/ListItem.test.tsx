@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { useTaskStore } from '@/features/tasks/store/taskStore';
 import ListItem from '@/features/lists/components/ListItem';
@@ -122,17 +122,16 @@ describe('ListItem', () => {
   it('renders list item with correct name', () => {
     expect(screen.getByText('Test List')).toBeInTheDocument();
   });
-  it('shows input field on double click', async () => {
-    const user = userEvent.setup();
+  it('shows input field on right click', () => {
     const listItem = screen.getByText('Test List');
-    await user.dblClick(listItem);
+    fireEvent.contextMenu(listItem);
     const input = screen.getByDisplayValue('Test List');
     expect(input).toBeVisible();
   });
   it('updates list name on input change and blur', async () => {
     const user = userEvent.setup();
     const listItem = screen.getByText('Test List');
-    await user.dblClick(listItem);
+    fireEvent.contextMenu(listItem);
     const input = screen.getByDisplayValue('Test List');
     await user.clear(input);
     await user.type(input, 'Updated List Name');

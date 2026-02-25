@@ -25,7 +25,6 @@ const ListItem = ({ list }: ListItemProps) => {
   const [countTasks, setCountTasks] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
   const { setOpen, setHandleDelete, setListTitle } = useAlertDialogStore();
-  const [clickTimeout, setClickTimeout] = useState<NodeJS.Timeout | null>(null);
   const [listName, setListName] = useState(list.name);
   const [previousName, setPreviousName] = useState(list.name);
   const listNameDebounced = useDebounce(listName, 200);
@@ -84,26 +83,12 @@ const ListItem = ({ list }: ListItemProps) => {
     navigate(`/b/` + list.listId);
   };
 
-  const handleDoubleClick = () => {
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (isFocused) return;
     inputRef.current?.focus();
     inputRef.current?.setSelectionRange(-1, -1);
     setIsFocused(true);
-  };
-
-  const handleClicks = () => {
-    if (clickTimeout) {
-      clearTimeout(clickTimeout);
-      setClickTimeout(null);
-      handleDoubleClick();
-    } else {
-      handleClick();
-      setClickTimeout(
-        setTimeout(() => {
-          setClickTimeout(null);
-        }, 200)
-      );
-    }
   };
 
   useEffect(() => {
@@ -118,8 +103,9 @@ const ListItem = ({ list }: ListItemProps) => {
   return (
     <li
       tabIndex={0}
-      onClick={handleClicks}
-      onKeyDown={(e) => e.key === 'Enter' && handleClicks()}
+      onClick={handleClick}
+      onContextMenu={handleContextMenu}
+      onKeyDown={(e) => e.key === 'Enter' && handleClick()}
       className={`relative w-full h-12 mx-auto mt-1 flex items-center justify-between text-neutral-500 dark:text-neutral-100
         bg-neutral-50 dark:bg-neutral-900 rounded-md hover:bg-black/10 dark:hover:bg-white/20 
         transition-colors duration-200 select-none group
