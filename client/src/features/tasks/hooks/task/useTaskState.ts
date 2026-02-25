@@ -1,4 +1,3 @@
-import { MAX_TIMEOUT } from '@/shared/constants/base';
 import { TaskProps } from '@shared/types/task.types';
 import { useDebounce } from '@uidotdev/usehooks';
 import { useDeferredValue, useRef, useState } from 'react';
@@ -13,14 +12,11 @@ export const useTaskState = (task: TaskProps) => {
   const [description, setDescription] = useState(task.description);
   const [isFocused, setIsFocused] = useState(false);
   const [previousName, setPreviousName] = useState(task.name);
-  const [countClick, setCountClick] = useState(0);
-  const [lastTapTime, setLastTapTime] = useState<number>(0);
   const [touchStartTime, setTouchStartTime] = useState<number>(0);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   // Estados derivados
   const deferredTaskName = useDeferredValue(taskName);
   const debouncedChecked = useDebounce(checked, 300);
-  const debouncedCountClick = useDebounce(countClick, MAX_TIMEOUT);
 
   return {
     textareaRef,
@@ -36,16 +32,11 @@ export const useTaskState = (task: TaskProps) => {
     setIsFocused,
     previousName,
     setPreviousName,
-    countClick,
-    setCountClick,
-    lastTapTime,
-    setLastTapTime,
     touchStartTime,
     setTouchStartTime,
     isGeneratingAI,
     setIsGeneratingAI,
     deferredTaskName,
     debouncedChecked,
-    debouncedCountClick,
   };
 };

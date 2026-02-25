@@ -91,41 +91,39 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
     }
   };
 
-  const handleClicks = (e: React.MouseEvent) => {
-    state.setCountClick(e.detail);
-  };
-
-  // Handler para hacer doble clic en la tarea
-  const handleDoubleClick = useCallback(() => {
-    state.setIsFocused(true);
-    setIsOpen(false);
-    calculateHeight(state.textareaRef);
-    if (state.textareaRef.current) state.textareaRef.current.focus();
-  }, [setIsOpen, state.setIsFocused]);
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      if (state.isFocused) return;
+      state.setIsFocused(true);
+      setIsOpen(false);
+      calculateHeight(state.textareaRef);
+      if (state.textareaRef.current) state.textareaRef.current.focus();
+    },
+    [setIsOpen, state.isFocused, state.setIsFocused]
+  );
 
   const handleClick = useCallback(() => {
+    if (state.isFocused) return;
     setIsOpen(true);
     setTask({ ...task, checked: state.checked });
-  }, [task, state.checked, setIsOpen, setTask]);
+  }, [task, state.checked, state.isFocused, setIsOpen, setTask]);
 
-  // Handler para iniciar el tiempo de pulsación y actualizar el contador de clics
+  // Handler para iniciar el tiempo de pulsación
   const handleTouchStart = useCallback(() => {
     if (state.isFocused) return;
-    const currentTime = Date.now();
-    state.setTouchStartTime(currentTime);
-    const tapLength = currentTime - state.lastTapTime;
-    state.setLastTapTime(tapLength < MAX_TIMEOUT && tapLength > 0 ? 0 : currentTime);
-  }, [state.lastTapTime, state.isFocused]);
+    state.setTouchStartTime(Date.now());
+  }, [state.isFocused]);
 
-  // Handler para actualizar el contador de clics cuando se suelta el dedo
+  // Handler para abrir la tarea al soltar el dedo (tap corto)
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
       if (state.isFocused) return;
       e.preventDefault();
       const touchDuration = Date.now() - state.touchStartTime;
-      if (touchDuration < MAX_TIMEOUT) state.setCountClick((prev) => prev + 1);
+      if (touchDuration < MAX_TIMEOUT) handleClick();
     },
-    [state.touchStartTime, state.isFocused]
+    [state.touchStartTime, state.isFocused, handleClick]
   );
 
   // Handler para actualizar el nombre de la tarea cuando se cambia
@@ -165,8 +163,7 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
     handleChange,
     handleChangeDescription,
     handleCheckboxChange,
-    handleClicks,
-    handleDoubleClick,
+    handleContextMenu,
     handleClick,
     handleTouchStart,
     handleTouchEnd,

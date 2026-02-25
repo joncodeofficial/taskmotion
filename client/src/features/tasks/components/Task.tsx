@@ -30,7 +30,8 @@ export const Task = ({ task, attributes, listeners }: TaskComponentProps) => {
     handleBlur,
     handleDelete,
     handleCheckboxChange,
-    handleClicks,
+    handleClick,
+    handleContextMenu,
     handleTouchStart,
     handleTouchEnd,
     handleDuplicate,
@@ -74,7 +75,8 @@ export const Task = ({ task, attributes, listeners }: TaskComponentProps) => {
         taskName={taskName}
         checked={checked}
         date={task.date || ''}
-        onClick={handleClicks}
+        onClick={handleClick}
+        onContextMenu={handleContextMenu}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       />

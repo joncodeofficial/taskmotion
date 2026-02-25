@@ -47,13 +47,5 @@ export const useTask = (task: TaskProps) => {
     });
   }, [state.date]);
 
-  // Manejar clics y doble clics
-  useEffect(() => {
-    if (state.debouncedCountClick === 0) return;
-    if (state.debouncedCountClick === 1 && !state.isFocused) handlers.handleClick();
-    if (state.debouncedCountClick > 1) handlers.handleDoubleClick();
-    state.setCountClick(0);
-  }, [state.debouncedCountClick]);
-
   return { ...state, ...handlers };
 };
