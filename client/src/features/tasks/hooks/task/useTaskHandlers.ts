@@ -5,41 +5,31 @@ import { useParams } from 'react-router-dom';
 import { useTaskStore } from '@/features/tasks/store/taskStore';
 import { useModalStore } from '@/features/tasks/store/modalStore';
 import { ChangeEvent, useCallback } from 'react';
-import { MAX_TIMEOUT, SIZE_ID } from '@/shared/constants/base';
-import { nanoid } from 'nanoid';
-import { updateTaskState } from '@/features/tasks/utils/updateTaskState';
+import { MAX_TIMEOUT } from '@/shared/constants/base';
 import { getAIDescription } from '@/shared/services/aiService';
 import { calculateHeight, resetHeight } from '@/features/tasks/utils/calculateHeight';
 import { replaceEmojis } from '@/shared/utils/replaceEmojis';
 import { UserAuth } from '@/app/context/AuthContext';
 import { useUpdateNotifications } from '../../../../shared/hooks/useNotification';
 import { createNotification } from '@/shared/utils/createNotification';
-import { useLists, useUpdateList } from '@/features/lists/hooks/useLists';
+import { useUpdateTask, useDeleteTask, useDuplicateTask, useMoveTask } from '../useTasks';
 
 // Hook para manejar los handlers de la tarea
 export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTaskState>) => {
   const { listId } = useParams();
-  const { tasks, setTasks } = useTaskStore();
+  const { deleteTask: deleteTaskFromStore } = useTaskStore();
   const { setIsOpen, setTask } = useModalStore();
   const { email } = UserAuth().user;
   const updateNotifications = useUpdateNotifications();
-  const { lists } = useLists();
-  const updateList = useUpdateList();
-
-  const updateTaskAndLists = useCallback(
-    (updatedTasks: TaskProps[]) => {
-      if (!listId) return;
-      updateList.mutate({ listId, body: { tasks: updatedTasks } });
-    },
-    [listId, setTasks, lists]
-  );
+  const updateTaskMutation = useUpdateTask();
+  const deleteTaskMutation = useDeleteTask();
+  const duplicateTaskMutation = useDuplicateTask();
+  const moveTaskMutation = useMoveTask();
 
   const handleDuplicate = useCallback(() => {
     if (!listId) return;
-    const newTask = { ...task, id: nanoid(SIZE_ID) };
-    const updateTasks = [newTask, ...tasks];
-    updateTaskAndLists(updateTasks);
-  }, [task, listId, tasks]);
+    duplicateTaskMutation.mutate(task.id);
+  }, [task, listId]);
 
   const handleCopyClipboard = useCallback(() => {
     if (!listId) return;
@@ -49,30 +39,10 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
   const handleMoveTo = useCallback(
     (listIdMove?: string) => {
       if (!listId || !listIdMove) return;
-      const removeTask = tasks.filter((t) => t.id !== task.id);
-      setTasks(removeTask);
-
-      if (!lists) return;
-      const currentIndex = lists.findIndex((l) => l.listId === listId);
-      const currentList = [...lists];
-
-      if (currentIndex !== -1) {
-        currentList[currentIndex].tasks = removeTask;
-        updateList.mutate({ listId, body: { tasks: removeTask } });
-      }
-
-      const moveList = [...lists];
-      const moveIndex = lists.findIndex((l) => l.listId === listIdMove);
-
-      if (moveIndex !== -1) {
-        moveList[moveIndex].tasks = [task, ...lists[moveIndex].tasks];
-        updateList.mutate({
-          listId: listIdMove,
-          body: { tasks: moveList[moveIndex].tasks },
-        });
-      }
+      deleteTaskFromStore(task.id);
+      moveTaskMutation.mutate({ taskId: task.id, targetListId: listIdMove });
     },
-    [task, listId, tasks]
+    [task, listId]
   );
 
   const handleDelete = useCallback(
@@ -80,8 +50,8 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
       if (!listId) return;
       e.preventDefault();
       e.stopPropagation();
-      const updatedTasks = tasks.filter((elem: TaskProps) => elem.id !== task.id);
-      updateTaskAndLists(updatedTasks);
+      deleteTaskFromStore(task.id);
+      deleteTaskMutation.mutate(task.id);
 
       const body = createNotification({
         type: 'task',
@@ -92,16 +62,12 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
 
       updateNotifications.mutate({ email, body });
     },
-    [listId, tasks, updateTaskAndLists]
+    [listId, task]
   );
 
   const handleBlurDescription = () => {
     if (!listId || state.description === task.description) return;
-    const { id } = task;
-    const updateTasks = updateTaskState(id, tasks, {
-      description: state.description,
-    });
-    updateTaskAndLists(updateTasks);
+    updateTaskMutation.mutate({ taskId: task.id, body: { description: state.description } });
   };
 
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -140,7 +106,6 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
 
   const handleClick = useCallback(() => {
     setIsOpen(true);
-
     setTask({ ...task, checked: state.checked });
   }, [task, state.checked, setIsOpen, setTask]);
 
@@ -168,18 +133,15 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
   const handleBlur = useCallback(() => {
     if (listId && state.taskName && state.taskName !== state.previousName) {
       const taskNameFormatted = replaceEmojis(state.taskName);
-      const updatedTasks = updateTaskState(task.id, tasks, {
-        name: taskNameFormatted,
-      });
       state.setPreviousName(taskNameFormatted);
       state.setTaskName(taskNameFormatted);
-      updateTaskAndLists(updatedTasks);
+      updateTaskMutation.mutate({ taskId: task.id, body: { name: taskNameFormatted } });
     } else {
       state.setTaskName(state.previousName);
     }
     state.setIsFocused(false);
     resetHeight(state.textareaRef);
-  }, [listId, state.taskName, tasks]);
+  }, [listId, state.taskName]);
 
   // Handler para generar la descripción de la tarea utilizando la IA
   const handleGenerateAIDescription = async () => {
@@ -187,11 +149,8 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
     try {
       state.setIsGeneratingAI(true);
       const newDescription = await getAIDescription(state.taskName, state.description);
-      const updatedTasks = updateTaskState(task.id, tasks, {
-        description: newDescription,
-      });
       state.setDescription(newDescription);
-      updateTaskAndLists(updatedTasks);
+      updateTaskMutation.mutate({ taskId: task.id, body: { description: newDescription } });
     } catch (error) {
       console.error('Error generating AI description:', error);
     } finally {
@@ -200,7 +159,6 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
   };
 
   return {
-    updateTaskAndLists,
     handleDuplicate,
     handleMoveTo,
     handleDelete,

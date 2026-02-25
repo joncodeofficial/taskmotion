@@ -36,8 +36,8 @@ export const createList = async ({ email, body }: Pick<ListServiceProps, 'email'
   }
 };
 
-// Function to update an existing list
-export const updateList = async ({ listId, body }: Pick<ListServiceProps, 'listId' | 'body'>): Promise<void> => {
+// Function to update an existing list (name only)
+export const updateList = async ({ listId, body }: { listId: string; body: Pick<ListProps, 'name'> }): Promise<void> => {
   try {
     await api.put(`api/lists/${listId}`, body);
   } catch {

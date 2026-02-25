@@ -11,7 +11,7 @@ import { UserAuth } from '@/app/context/AuthContext';
 import { CreateInput } from '@/shared/components/CreateInput';
 import { useUpdateNotifications } from '@/shared/hooks/useNotification';
 import { createNotification } from '@/shared/utils/createNotification';
-import { useUpdateList } from '@/features/lists/hooks/useLists';
+import { useCreateTask as useCreateTaskMutation } from '@/features/tasks/hooks/useTasks';
 
 const CreateTask = () => {
   const [taskName, setTaskName] = useState('');
@@ -23,22 +23,27 @@ const CreateTask = () => {
   const [date, setDate] = useState<string | undefined>(undefined);
   const { email } = UserAuth().user;
   const updateNotifications = useUpdateNotifications();
-  const updateList = useUpdateList();
+  const createTaskMutation = useCreateTaskMutation();
 
   const createTask = () => {
     if (taskName && listId) {
       const newTask = {
         id: nanoid(SIZE_ID),
+        list_id: listId,
         name: replaceEmojis(taskName),
         description: '',
         checked,
         date: date ? format(date, 'MM-dd-yyyy') : '',
+        position: 0,
       };
-      const updateTasks = [newTask, ...tasks];
+
+      // Shift existing tasks' positions
+      const position = tasks.length > 0 ? 0 : 0;
+
       setDate(undefined);
       setChecked(false);
       setTaskName('');
-      updateList.mutate({ listId, body: { listId, tasks: updateTasks } });
+      createTaskMutation.mutate({ ...newTask, position });
 
       const body = createNotification({
         type: 'task',

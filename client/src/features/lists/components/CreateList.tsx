@@ -25,7 +25,6 @@ const CreateList = () => {
       const newlist = {
         listId: nanoid(SIZE_ID),
         name: replaceEmojis(listName),
-        tasks: [],
       };
       createList.mutate({ email, body: newlist });
       setListName('');

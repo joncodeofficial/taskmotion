@@ -49,7 +49,7 @@ const ListItem = ({ list }: ListItemProps) => {
       const formattedName = replaceEmojis(listName);
       updateList.mutate({
         listId,
-        body: { name: formattedName, tasks },
+        body: { name: formattedName },
       });
       setListName(formattedName);
       setPreviousName(formattedName);

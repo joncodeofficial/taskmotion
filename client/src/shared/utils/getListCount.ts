@@ -2,10 +2,10 @@ import { ListProps } from '@shared/types/list.types';
 import { format, isSameDay, subDays } from 'date-fns';
 
 export const getListCount = (lists: ListProps[]) => {
-  const total = lists.reduce((acc, list) => acc + list.tasks.length, 0);
+  const total = lists.reduce((acc, list) => acc + (list.tasks ?? []).length, 0);
 
   const completed = lists.reduce(
-    (acc, list) => acc + list.tasks.filter((task) => task.checked).length,
+    (acc, list) => acc + (list.tasks ?? []).filter((task) => task.checked).length,
     0
   );
 
@@ -13,7 +13,7 @@ export const getListCount = (lists: ListProps[]) => {
     const today = new Date();
     return (
       acc +
-      list.tasks.filter((task) => (task.date ? !task.checked && !isSameDay(today, task.date) : 0))
+      (list.tasks ?? []).filter((task) => (task.date ? !task.checked && !isSameDay(today, task.date) : 0))
         .length
     );
   }, 0);
@@ -26,7 +26,7 @@ export const getListCount = (lists: ListProps[]) => {
     const completedTasksForDay = lists.reduce((acc, list) => {
       return (
         acc +
-        list.tasks.filter(
+        (list.tasks ?? []).filter(
           (task) => task.checked && task.date && isSameDay(new Date(task.date), date)
         ).length
       );
@@ -47,7 +47,7 @@ export const getListCount = (lists: ListProps[]) => {
       const tasksForDay = lists.reduce((acc, list) => {
         return (
           acc +
-          list.tasks.filter((task) => task.date && isSameDay(new Date(task.date), date)).length
+          (list.tasks ?? []).filter((task) => task.date && isSameDay(new Date(task.date), date)).length
         );
       }, 0);
 

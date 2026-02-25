@@ -18,7 +18,7 @@ import { useParams } from 'react-router-dom';
 import { useDragStore } from '@/features/tasks/store/dragStore';
 import { useTaskStore } from '@/features/tasks/store/taskStore';
 import SortableItem from './SortableItem';
-import { useUpdateList } from '@/features/lists/hooks/useLists';
+import { useReorderTasks } from '@/features/tasks/hooks/useTasks';
 
 type handleDragEndProps = {
   active: Active;
@@ -30,7 +30,7 @@ const SortableList = () => {
   const [active, setActive] = useState<Active | null>(null);
   const { setIsDragging } = useDragStore();
   const { tasks, setTasks } = useTaskStore();
-  const updateList = useUpdateList();
+  const reorderTasks = useReorderTasks();
 
   const activeItem = useMemo(() => tasks.find((item) => item.id === active?.id), [active, tasks]);
 
@@ -54,7 +54,8 @@ const SortableList = () => {
       const overIndex = tasks.findIndex(({ id }) => id === over.id);
       const newOrder = arrayMove(tasks, activeIndex, overIndex);
       setTasks(newOrder);
-      updateList.mutate({ listId, body: { tasks: newOrder } });
+      const reorderItems = newOrder.map((task, index) => ({ id: task.id, position: index }));
+      reorderTasks.mutate(reorderItems);
     }
     setActive(null);
     setIsDragging(false);

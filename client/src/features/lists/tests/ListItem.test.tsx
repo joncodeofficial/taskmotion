@@ -8,8 +8,8 @@ import { TaskProps } from '@shared/types/task.types';
 import { useNavigate } from 'react-router-dom';
 
 const mockTasks = [
-  { id: '1', checked: false, name: 'Task 1', description: 'Description 1', date: '' },
-  { id: '2', checked: true, name: 'Task 2', description: 'Description 2', date: '' },
+  { id: '1', list_id: '1', checked: false, name: 'Task 1', description: 'Description 1', date: '', position: 0 },
+  { id: '2', list_id: '1', checked: true, name: 'Task 2', description: 'Description 2', date: '', position: 1 },
 ] satisfies TaskProps[];
 
 const mockList: ListProps = {

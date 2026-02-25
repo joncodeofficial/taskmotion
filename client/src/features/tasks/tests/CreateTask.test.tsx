@@ -19,9 +19,9 @@ vi.mock('@/shared/hooks/useNotification', () => ({
   }),
 }));
 
-// Mock para las listas
-vi.mock('@/features/lists/hooks/useLists', () => ({
-  useUpdateList: vi.fn().mockReturnValue({
+// Mock para las tasks
+vi.mock('@/features/tasks/hooks/useTasks', () => ({
+  useCreateTask: vi.fn().mockReturnValue({
     mutate: vi.fn(),
   }),
 }));
