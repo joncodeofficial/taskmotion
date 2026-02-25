@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { TaskProps } from '@shared/types/task.types';
 import { useTaskState } from './useTaskState';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useModalStore } from '@/features/tasks/store/modalStore';
 import { ChangeEvent, useCallback } from 'react';
 import { MAX_TIMEOUT } from '@/shared/constants/base';

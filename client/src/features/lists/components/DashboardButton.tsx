@@ -1,5 +1,5 @@
 import { LayoutDashboardIcon } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 
 export const DashboardButton = () => {
   const { listId } = useParams();

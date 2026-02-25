@@ -1,7 +1,7 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 import { supabase } from '@/supabase/supabase.config';
 import { UserProps } from '@/shared/types/user.types';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const AuthContext = createContext({
   signInWithGoogle: () => {},
@@ -17,7 +17,6 @@ const AuthContext = createContext({
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState({} as UserProps);
-  const location = useLocation();
 
   async function signInWithGoogle() {
     try {
@@ -58,7 +57,8 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (_, session) => {
       if (session === null) {
-        navigate(location.pathname.includes('login') ? '/login' : '/');
+        const isLoginPage = window.location.pathname.includes('login');
+        navigate(isLoginPage ? '/login' : '/');
         setUser({} as UserProps);
       } else {
         setUser({
@@ -69,9 +69,9 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
       }
     });
     return () => {
-      authListener.subscription;
+      authListener.subscription.unsubscribe();
     };
-  }, [location.pathname, navigate]);
+  }, [navigate]);
 
   return (
     <AuthContext.Provider value={{ signInWithGoogle, signInWithGithub, signout, user }}>

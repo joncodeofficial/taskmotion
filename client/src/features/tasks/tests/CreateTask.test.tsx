@@ -26,8 +26,8 @@ vi.mock('@/features/tasks/hooks/useTasks', () => ({
   }),
 }));
 
-// Mock para react-router-dom
-vi.mock('react-router-dom', () => ({
+// Mock para react-router
+vi.mock('react-router', () => ({
   useNavigate: vi.fn(),
   useParams: vi.fn().mockReturnValue({
     listId: '123e4567-e89b-12d3-a456-426614174000',

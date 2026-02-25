@@ -14,7 +14,7 @@ import { SortableContext, arrayMove, sortableKeyboardCoordinates } from '@dnd-ki
 import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
 import { SortableOverlay } from './SortableOverlay';
 import { Virtuoso } from 'react-virtuoso';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useDragStore } from '@/features/tasks/store/dragStore';
 import { useTaskStore } from '@/features/tasks/store/taskStore';
 import SortableItem from './SortableItem';

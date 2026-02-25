@@ -2,7 +2,7 @@ import { UserAuth } from '@/app/context/AuthContext';
 import { useEffect, useRef, useState } from 'react';
 import { nanoid } from 'nanoid';
 import { replaceEmojis } from '@/shared/utils/replaceEmojis';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useShortcut } from '@/shared/hooks/useShortcut';
 import { SIZE_ID } from '@/shared/constants/base';
 import { CreateInput } from '@/shared/components/CreateInput';

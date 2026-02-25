@@ -1,5 +1,5 @@
 import { ListTodo, Target, Zap, Calendar, Star } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const Hero = () => {
   const navigate = useNavigate();

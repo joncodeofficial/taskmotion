@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useModalStore } from '@/features/tasks/store/modalStore';
 import { format } from 'date-fns';
 import { TaskProps } from '@shared/types/task.types';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useTaskState } from './useTaskState';
 import { useTaskHandlers } from './useTaskHandlers';
 import { useUpdateTask } from '../useTasks';

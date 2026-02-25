@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import SortableList from '@/features/tasks/components/dnd/SortableList';
 import { useTaskStore } from '@/features/tasks/store/taskStore';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { useAlertDialogStore } from '@/shared/store/dialogStore';
 import { useLists } from '@/features/lists/hooks/useLists';
 

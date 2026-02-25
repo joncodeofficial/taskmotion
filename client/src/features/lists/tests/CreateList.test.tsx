@@ -3,7 +3,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CreateList from '@/features/lists/components/CreateList';
 import { useMediaQuery } from '@uidotdev/usehooks';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 // Mock para el contexto de autenticación
 vi.mock('@/app/context/AuthContext', () => ({
@@ -85,8 +85,8 @@ vi.mock('@/features/lists/hooks/useLists', () => ({
   })),
 }));
 
-// Mock para react-router-dom
-vi.mock('react-router-dom', () => ({
+// Mock para react-router
+vi.mock('react-router', () => ({
   useNavigate: vi.fn(() => vi.fn()),
 }));
 

@@ -1,4 +1,4 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router';
 import { UserAuth } from '@/app/context/AuthContext';
 import Home from '@/pages/Home';
 import { TodoList } from '@/pages/TodoList';
@@ -35,7 +35,7 @@ const App = () => {
       <Route
         path='/'
         element={
-          <ProtectedRoute isAuthenticated={isAuthenticated} redirect={location.pathname}>
+          <ProtectedRoute isAuthenticated={isAuthenticated} redirect='/'>
             <Layout />
           </ProtectedRoute>
         }

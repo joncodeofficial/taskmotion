@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router';
 import { ListProps } from '@shared/types/list.types';
 import { useAlertDialogStore } from '@/shared/store/dialogStore';
 import { useTaskStore } from '@/features/tasks/store/taskStore';

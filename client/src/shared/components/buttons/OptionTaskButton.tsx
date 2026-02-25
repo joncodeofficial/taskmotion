@@ -10,7 +10,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { useLists } from '@/features/lists/hooks/useLists';
 
 type OptionTaskButton = {

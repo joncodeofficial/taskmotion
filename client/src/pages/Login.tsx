@@ -7,7 +7,7 @@ import {
 } from '@/shared/components/ui/card';
 import { Button } from '@/shared/components/ui/button';
 import { Modal } from '@/shared/components/ui/modal';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { UserAuth } from '@/app/context/AuthContext';
 
 const Login = () => {

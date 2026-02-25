@@ -5,7 +5,7 @@ import { useTaskStore } from '@/features/tasks/store/taskStore';
 import ListItem from '@/features/lists/components/ListItem';
 import { ListProps } from '@shared/types/list.types';
 import { TaskProps } from '@shared/types/task.types';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const mockTasks = [
   { id: '1', list_id: '1', checked: false, name: 'Task 1', description: 'Description 1', date: '', position: 0 },
@@ -24,8 +24,8 @@ vi.mock('@/features/tasks/store/taskStore', () => ({
   useTaskStore: vi.fn(),
 }));
 
-// Mock para react-router-dom
-vi.mock('react-router-dom', () => ({
+// Mock para react-router
+vi.mock('react-router', () => ({
   useNavigate: vi.fn(),
   useParams: vi.fn(() => ({
     listId: '1',

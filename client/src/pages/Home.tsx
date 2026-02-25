@@ -1,7 +1,7 @@
 import Navbar from '@/features/home/components/Navbar';
 import Hero from '@/features/home/components/Hero';
 import Footer from '@/features/home/components/Footer';
-import { Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router';
 const Home = () => {
   return (
     <div className='flex flex-col min-h-screen'>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { nanoid } from 'nanoid';
 import { useTaskStore } from '../store/taskStore';
-import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router';
 import { replaceEmojis } from '@/shared/utils/replaceEmojis';
 import { SIZE_ID } from '@/shared/constants/base';
 import { useShortcut } from '@/shared/hooks/useShortcut';
