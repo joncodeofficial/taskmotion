@@ -4,7 +4,7 @@ import { useTaskState } from './useTaskState';
 import { useParams } from 'react-router';
 import { useModalStore } from '@/features/tasks/store/modalStore';
 import { ChangeEvent, useCallback } from 'react';
-import { MAX_TIMEOUT } from '@/shared/constants/base';
+import { MAX_TIMEOUT, SIZE_ID } from '@/shared/constants/base';
 import { getAIDescription } from '@/shared/services/aiService';
 import { calculateHeight, resetHeight } from '@/features/tasks/utils/calculateHeight';
 import { replaceEmojis } from '@/shared/utils/replaceEmojis';
@@ -13,7 +13,6 @@ import { useUpdateNotifications } from '../../../../shared/hooks/useNotification
 import { createNotification } from '@/shared/utils/createNotification';
 import { useUpdateTask, useDeleteTask, useDuplicateTask, useMoveTask } from '../useTasks';
 import { nanoid } from 'nanoid';
-import { SIZE_ID } from '@/shared/constants/base';
 
 // Hook para manejar los handlers de la tarea
 export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTaskState>) => {
@@ -109,21 +108,23 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
     setTask({ ...task, checked: state.checked });
   }, [task, state.checked, state.isFocused, setIsOpen, setTask]);
 
-  // Handler para iniciar el tiempo de pulsación
-  const handleTouchStart = useCallback(() => {
-    if (state.isFocused) return;
-    state.setTouchStartTime(Date.now());
-  }, [state.isFocused]);
+  const handleTouchStart = useCallback(
+    (e: React.TouchEvent) => {
+      if (state.isFocused) return;
+      state.setTouchStartTime(Date.now());
+      state.setTouchStartY(e.touches[0].clientY);
+    },
+    [state.isFocused]
+  );
 
-  // Handler para abrir la tarea al soltar el dedo (tap corto)
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
       if (state.isFocused) return;
-      e.preventDefault();
       const touchDuration = Date.now() - state.touchStartTime;
-      if (touchDuration < MAX_TIMEOUT) handleClick();
+      const deltaY = Math.abs(e.changedTouches[0].clientY - state.touchStartY);
+      if (touchDuration < MAX_TIMEOUT && deltaY < 10) handleClick();
     },
-    [state.touchStartTime, state.isFocused, handleClick]
+    [state.touchStartTime, state.touchStartY, state.isFocused, handleClick]
   );
 
   // Handler para actualizar el nombre de la tarea cuando se cambia

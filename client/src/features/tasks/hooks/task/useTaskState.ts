@@ -13,6 +13,7 @@ export const useTaskState = (task: TaskProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const [previousName, setPreviousName] = useState(task.name);
   const [touchStartTime, setTouchStartTime] = useState<number>(0);
+  const [touchStartY, setTouchStartY] = useState<number>(0);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   // Estados derivados
   const deferredTaskName = useDeferredValue(taskName);
@@ -34,6 +35,8 @@ export const useTaskState = (task: TaskProps) => {
     setPreviousName,
     touchStartTime,
     setTouchStartTime,
+    touchStartY,
+    setTouchStartY,
     isGeneratingAI,
     setIsGeneratingAI,
     deferredTaskName,
