@@ -40,7 +40,7 @@ export const deleteTask = async (taskId: string): Promise<void> => {
 };
 
 export const reorderTasks = async (items: { id: string; position: number }[]): Promise<void> => {
-  await api.patch('api/tasks/reorder', items);
+  await api.put('api/tasks/reorder', items);
 };
 
 export const duplicateTask = async (taskId: string): Promise<TaskProps[]> => {
