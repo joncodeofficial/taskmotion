@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useTaskStore } from '@/features/tasks/store/taskStore';
 import ListItem from '@/features/lists/components/ListItem';
 import { ListProps } from '@shared/types/list.types';
 import { TaskProps } from '@shared/types/task.types';
@@ -19,9 +18,11 @@ const mockList: ListProps = {
   tasks: mockTasks,
 };
 
-// Mock para el store de tareas
-vi.mock('@/features/tasks/store/taskStore', () => ({
-  useTaskStore: vi.fn(),
+// Mock para react-query
+vi.mock('@tanstack/react-query', () => ({
+  useQueryClient: vi.fn(() => ({
+    getQueryData: vi.fn(() => mockTasks),
+  })),
 }));
 
 // Mock para react-router
@@ -39,11 +40,6 @@ vi.mock('@/shared/store/dialogStore', () => ({
     setHandleDelete: vi.fn(),
     setListTitle: vi.fn(),
   })),
-}));
-
-// Mock para las utilidades de listas
-vi.mock('@/features/lists/utils/getTaskCount', () => ({
-  getTaskCount: vi.fn(() => 2),
 }));
 
 // Mock para lucide-react
@@ -108,10 +104,6 @@ vi.mock('@/features/lists/hooks/useLists', () => ({
     mutate: vi.fn(),
   })),
 }));
-
-vi.mocked(useTaskStore).mockReturnValue({
-  tasks: mockTasks,
-});
 
 vi.mocked(useNavigate).mockReturnValue(vi.fn());
 
