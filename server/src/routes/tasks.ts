@@ -39,8 +39,8 @@ taskApp.post('/', zCreateTaskValidator, async (c) => {
   return c.json({ data }, 201);
 });
 
-// REORDER tasks (must be before /:taskId to avoid route conflict)
-taskApp.patch('/reorder', zReorderValidator, async (c) => {
+// REORDER tasks
+taskApp.put('/reorder', zReorderValidator, async (c) => {
   const items = c.req.valid('json');
   const { error } = await reorderTasks(c, items);
 
