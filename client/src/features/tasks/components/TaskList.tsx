@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import SortableList from '@/features/tasks/components/dnd/SortableList';
-import { useTaskStore } from '@/features/tasks/store/taskStore';
+import { useTasks } from '@/features/tasks/hooks/useTasks';
 import { useNavigate, useParams } from 'react-router';
 import { useAlertDialogStore } from '@/shared/store/dialogStore';
 import { useLists } from '@/features/lists/hooks/useLists';
@@ -14,9 +14,9 @@ const EmptyList = () => {
 };
 
 export const TaskList = () => {
-  const { tasks, setTasks } = useTaskStore();
-  const { lists } = useLists();
   const { listId } = useParams();
+  const { tasks } = useTasks(listId);
+  const { lists } = useLists();
   const { setListTitle } = useAlertDialogStore();
   const navigate = useNavigate();
 
@@ -25,8 +25,7 @@ export const TaskList = () => {
     const findList = lists.find((l) => l.listId === listId);
     if (!findList && lists.length !== 0) navigate('/u/dashboard');
     setListTitle(findList?.name ?? '');
-    setTasks(findList?.tasks || []);
-  }, [listId, lists, navigate, setListTitle, setTasks]);
+  }, [listId, lists, navigate, setListTitle]);
 
   return tasks.length > 0 ? <SortableList /> : <EmptyList />;
 };

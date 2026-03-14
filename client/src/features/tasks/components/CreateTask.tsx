@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import { nanoid } from 'nanoid';
-import { useTaskStore } from '../store/taskStore';
 import { useParams } from 'react-router';
 import { replaceEmojis } from '@/shared/utils/replaceEmojis';
 import { SIZE_ID } from '@/shared/constants/base';
@@ -15,7 +14,6 @@ import { useCreateTask as useCreateTaskMutation } from '@/features/tasks/hooks/u
 
 const CreateTask = () => {
   const [taskName, setTaskName] = useState('');
-  const { tasks } = useTaskStore();
   const { listId } = useParams();
   const [checked, setChecked] = useState(false);
   const inputRef = useRef(null!) as React.RefObject<HTMLInputElement>;
@@ -37,13 +35,10 @@ const CreateTask = () => {
         position: 0,
       };
 
-      // Shift existing tasks' positions
-      const position = tasks.length > 0 ? 0 : 0;
-
       setDate(undefined);
       setChecked(false);
       setTaskName('');
-      createTaskMutation.mutate({ ...newTask, position });
+      createTaskMutation.mutate({ ...newTask, position: 0 });
 
       const body = createNotification({
         type: 'task',

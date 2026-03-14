@@ -2,8 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { ListProps } from '@shared/types/list.types';
 import { useAlertDialogStore } from '@/shared/store/dialogStore';
-import { useTaskStore } from '@/features/tasks/store/taskStore';
-import { getTaskCount } from '@/features/lists/utils/getTaskCount';
+import { useQueryClient } from '@tanstack/react-query';
+import { TaskProps } from '@shared/types/task.types';
 import { Trash2 } from 'lucide-react';
 import { Tooltip } from '@/shared/components/ui/tooltip';
 import { replaceEmojis } from '@/shared/utils/replaceEmojis';
@@ -20,9 +20,8 @@ type ListItemProps = {
 const ListItem = ({ list }: ListItemProps) => {
   const { listId } = useParams();
   const navigate = useNavigate();
-  const { tasks } = useTaskStore();
+  const queryClient = useQueryClient();
   const inputRef = useRef(null!) as React.MutableRefObject<HTMLInputElement>;
-  const [countTasks, setCountTasks] = useState(0);
   const [isFocused, setIsFocused] = useState(false);
   const { setOpen, setHandleDelete, setListTitle } = useAlertDialogStore();
   const [listName, setListName] = useState(list.name);
@@ -92,10 +91,6 @@ const ListItem = ({ list }: ListItemProps) => {
   };
 
   useEffect(() => {
-    setCountTasks(getTaskCount(list, tasks, listId));
-  }, [list, listId, tasks]);
-
-  useEffect(() => {
     if (listNameDebounced === list.name) return;
     setListTitle(listNameDebounced as string);
   }, [list.name, listNameDebounced, setListTitle]);
@@ -150,7 +145,11 @@ const ListItem = ({ list }: ListItemProps) => {
             data-testid='task-count'
             className='text-center inline-block group-hover:hidden align-middle text-xs text-neutral-500 dark:text-neutral-100'
           >
-            <span className='w-full'>{countTasks}</span>
+            <span className='w-full'>
+            {list.listId === listId
+              ? (queryClient.getQueryData<TaskProps[]>(['tasks', listId]) ?? list.tasks ?? []).length
+              : (list.tasks ?? []).length}
+          </span>
           </span>
         </button>
       </Tooltip>

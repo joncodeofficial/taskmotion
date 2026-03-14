@@ -8,7 +8,6 @@ import {
   duplicateTask,
   moveTask,
 } from '../services/taskService';
-import { useTaskStore } from '../store/taskStore';
 import { TaskProps } from '@shared/types/task.types';
 
 export const useTasks = (listId?: string) => {
@@ -31,7 +30,8 @@ export const useCreateTask = () => {
   return useMutation({
     mutationFn: createTask,
     onMutate: (variables) => {
-      const previous = [...useTaskStore.getState().tasks];
+      const queryKey = ['tasks', variables.list_id];
+      const previous = queryClient.getQueryData<TaskProps[]>(queryKey);
       const newTask: TaskProps = {
         id: variables.id,
         list_id: variables.list_id,
@@ -41,11 +41,11 @@ export const useCreateTask = () => {
         date: variables.date,
         position: variables.position,
       };
-      useTaskStore.getState().addTask(newTask);
+      queryClient.setQueryData<TaskProps[]>(queryKey, [newTask, ...(previous ?? [])]);
       return { previous };
     },
-    onError: (_err, _vars, context) => {
-      if (context?.previous) useTaskStore.getState().setTasks(context.previous);
+    onError: (_err, variables, context) => {
+      queryClient.setQueryData(['tasks', variables.list_id], context?.previous);
     },
     onSettled: (_data, _error, variables) => {
       queryClient.invalidateQueries({ queryKey: ['tasks', variables.list_id] });
@@ -59,14 +59,18 @@ export const useUpdateTask = () => {
   return useMutation({
     mutationFn: updateTask,
     onMutate: ({ taskId, body }) => {
-      const previous = [...useTaskStore.getState().tasks];
-      useTaskStore.getState().setTasks(
-        previous.map((task) => (task.id === taskId ? { ...task, ...body } : task))
-      );
-      return { previous };
+      const allCaches = queryClient.getQueriesData<TaskProps[]>({ queryKey: ['tasks'] });
+      for (const [queryKey, tasks] of allCaches) {
+        if (!tasks?.some((t) => t.id === taskId)) continue;
+        queryClient.setQueryData<TaskProps[]>(
+          queryKey,
+          tasks.map((t) => (t.id === taskId ? { ...t, ...body } : t))
+        );
+        return { queryKey, previous: tasks };
+      }
     },
     onError: (_err, _vars, context) => {
-      if (context?.previous) useTaskStore.getState().setTasks(context.previous);
+      if (context) queryClient.setQueryData(context.queryKey, context.previous);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -80,12 +84,18 @@ export const useDeleteTask = () => {
   return useMutation({
     mutationFn: deleteTask,
     onMutate: (taskId) => {
-      const previous = [...useTaskStore.getState().tasks];
-      useTaskStore.getState().deleteTask(taskId);
-      return { previous };
+      const allCaches = queryClient.getQueriesData<TaskProps[]>({ queryKey: ['tasks'] });
+      for (const [queryKey, tasks] of allCaches) {
+        if (!tasks?.some((t) => t.id === taskId)) continue;
+        queryClient.setQueryData<TaskProps[]>(
+          queryKey,
+          tasks.filter((t) => t.id !== taskId)
+        );
+        return { queryKey, previous: tasks };
+      }
     },
     onError: (_err, _vars, context) => {
-      if (context?.previous) useTaskStore.getState().setTasks(context.previous);
+      if (context) queryClient.setQueryData(context.queryKey, context.previous);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
@@ -97,13 +107,14 @@ export const useDeleteTask = () => {
 export const useReorderTasks = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (variables: { items: { id: string; position: number }[]; previousTasks: TaskProps[] }) =>
+    mutationFn: (variables: { items: { id: string; position: number }[]; listId: string; previousTasks: TaskProps[] }) =>
       reorderTasks(variables.items),
     onError: (_err, variables) => {
-      useTaskStore.getState().setTasks(variables.previousTasks);
+      queryClient.setQueryData(['tasks', variables.listId], variables.previousTasks);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', variables.listId] });
+      queryClient.invalidateQueries({ queryKey: ['lists'] });
     },
   });
 };
@@ -111,27 +122,26 @@ export const useReorderTasks = () => {
 export const useDuplicateTask = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (variables: { taskId: string; tempTask: TaskProps }) =>
-      duplicateTask(variables.taskId),
+    mutationFn: (variables: { taskId: string; tempTask: TaskProps }) => duplicateTask(variables.taskId),
     onMutate: ({ tempTask }) => {
-      const previous = [...useTaskStore.getState().tasks];
-      useTaskStore.getState().addTask(tempTask);
+      const queryKey = ['tasks', tempTask.list_id];
+      const previous = queryClient.getQueryData<TaskProps[]>(queryKey);
+      queryClient.setQueryData<TaskProps[]>(queryKey, [tempTask, ...(previous ?? [])]);
       return { previous, tempId: tempTask.id };
     },
-    onSuccess: (data, _vars, context) => {
+    onSuccess: (data, vars, context) => {
       if (context?.tempId && data.length > 0) {
-        const current = useTaskStore.getState().tasks;
-        const serverTask = data[0];
-        useTaskStore.getState().setTasks(
-          current.map((t) => (t.id === context.tempId ? serverTask : t))
+        const queryKey = ['tasks', vars.tempTask.list_id];
+        queryClient.setQueryData<TaskProps[]>(queryKey, (current) =>
+          (current ?? []).map((t) => (t.id === context.tempId ? data[0] : t))
         );
       }
     },
-    onError: (_err, _vars, context) => {
-      if (context?.previous) useTaskStore.getState().setTasks(context.previous);
+    onError: (_err, vars, context) => {
+      queryClient.setQueryData(['tasks', vars.tempTask.list_id], context?.previous);
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    onSettled: (_data, _error, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['tasks', variables.tempTask.list_id] });
       queryClient.invalidateQueries({ queryKey: ['lists'] });
     },
   });
@@ -142,12 +152,18 @@ export const useMoveTask = () => {
   return useMutation({
     mutationFn: moveTask,
     onMutate: ({ taskId }) => {
-      const previous = [...useTaskStore.getState().tasks];
-      useTaskStore.getState().deleteTask(taskId);
-      return { previous };
+      const allCaches = queryClient.getQueriesData<TaskProps[]>({ queryKey: ['tasks'] });
+      for (const [queryKey, tasks] of allCaches) {
+        if (!tasks?.some((t) => t.id === taskId)) continue;
+        queryClient.setQueryData<TaskProps[]>(
+          queryKey,
+          tasks.filter((t) => t.id !== taskId)
+        );
+        return { queryKey, previous: tasks };
+      }
     },
     onError: (_err, _vars, context) => {
-      if (context?.previous) useTaskStore.getState().setTasks(context.previous);
+      if (context) queryClient.setQueryData(context.queryKey, context.previous);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
