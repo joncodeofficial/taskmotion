@@ -56,11 +56,7 @@ const SortableList = () => {
       const overIndex = previousTasks.findIndex(({ id }) => id === over.id);
       const newOrder = arrayMove(previousTasks, activeIndex, overIndex);
       queryClient.setQueryData<TaskProps[]>(['tasks', listId], newOrder);
-      const minIndex = Math.min(activeIndex, overIndex);
-      const maxIndex = Math.max(activeIndex, overIndex);
-      const items = newOrder
-        .slice(minIndex, maxIndex + 1)
-        .map((task, i) => ({ id: task.id, position: minIndex + i }));
+      const items = newOrder.map((task, index) => ({ id: task.id, position: index }));
       reorderTasks.mutate({ items, listId, previousTasks });
     }
     setActive(null);
