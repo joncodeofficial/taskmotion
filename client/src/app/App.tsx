@@ -11,11 +11,13 @@ import useAvoidZoom from '@/shared/hooks/useAvoidZoom';
 import { Layout } from '@/app/layouts/Layout';
 
 const App = () => {
-  const { user } = UserAuth();
+  const { user, loading } = UserAuth();
   const location = useLocation();
   const isAuthenticated = !isEmptyObject(user);
 
   useAvoidZoom();
+
+  if (loading) return null;
 
   return (
     <Routes>

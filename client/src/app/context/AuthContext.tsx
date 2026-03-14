@@ -12,11 +12,13 @@ const AuthContext = createContext({
     fullname: '',
     picture: '',
   } as UserProps,
+  loading: true,
 });
 
 export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState({} as UserProps);
+  const [loading, setLoading] = useState(true);
 
   async function signInWithGoogle() {
     try {
@@ -67,6 +69,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           picture: session.user.user_metadata.picture,
         });
       }
+      setLoading(false);
     });
     return () => {
       authListener.subscription.unsubscribe();
@@ -74,7 +77,7 @@ export const AuthContextProvider = ({ children }: { children: ReactNode }) => {
   }, [navigate]);
 
   return (
-    <AuthContext.Provider value={{ signInWithGoogle, signInWithGithub, signout, user }}>
+    <AuthContext.Provider value={{ signInWithGoogle, signInWithGithub, signout, user, loading }}>
       {children}
     </AuthContext.Provider>
   );
