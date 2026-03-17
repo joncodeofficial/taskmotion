@@ -9,14 +9,14 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
-    "@hono/zod-validator": "^0.2.1",
-    "@supabase/supabase-js": "^2.43.1",
-    "hono": "^4.2.3",
+    "@hono/zod-validator": "^0.2.2",
+    "@supabase/supabase-js": "^2.99.2",
+    "hono": "^4.12.8",
     "jwt-decode": "^4.0.0",
-    "nanoid": "^5.1.5"
+    "nanoid": "^5.1.7"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240405.0",
-    "wrangler": "^3.47.0"
+    "@cloudflare/workers-types": "^4.20260317.1",
+    "wrangler": "^3.114.17"
   }
 }
