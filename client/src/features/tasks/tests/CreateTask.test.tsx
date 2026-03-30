@@ -24,6 +24,9 @@ vi.mock('@/features/tasks/hooks/useTasks', () => ({
   useCreateTask: vi.fn().mockReturnValue({
     mutate: vi.fn(),
   }),
+  useTasks: vi.fn().mockReturnValue({
+    tasks: [],
+  }),
 }));
 
 // Mock para react-router
