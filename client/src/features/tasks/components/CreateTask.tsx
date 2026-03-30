@@ -10,12 +10,13 @@ import { UserAuth } from '@/app/context/AuthContext';
 import { CreateInput } from '@/shared/components/CreateInput';
 import { useUpdateNotifications } from '@/shared/hooks/useNotification';
 import { createNotification } from '@/shared/utils/createNotification';
-import { useCreateTask as useCreateTaskMutation } from '@/features/tasks/hooks/useTasks';
+import { useCreateTask as useCreateTaskMutation, useTasks } from '@/features/tasks/hooks/useTasks';
 
 const CreateTask = () => {
   const [taskName, setTaskName] = useState('');
   const { listId } = useParams();
   const [checked, setChecked] = useState(false);
+  const { tasks } = useTasks(listId);
   const inputRef = useRef(null!) as React.RefObject<HTMLInputElement>;
   const keydown = useShortcut(['ctrl+e']);
   const [date, setDate] = useState<string | undefined>(undefined);
@@ -25,6 +26,7 @@ const CreateTask = () => {
 
   const createTask = () => {
     if (taskName && listId) {
+      const minPosition = tasks.length > 0 ? Math.min(...tasks.map((t) => t.position)) : 1;
       const newTask = {
         id: nanoid(SIZE_ID),
         list_id: listId,
@@ -32,13 +34,13 @@ const CreateTask = () => {
         description: '',
         checked,
         date: date ? format(date, 'MM-dd-yyyy') : '',
-        position: 0,
+        position: minPosition - 1,
       };
 
       setDate(undefined);
       setChecked(false);
       setTaskName('');
-      createTaskMutation.mutate({ ...newTask, position: 0 });
+      createTaskMutation.mutate(newTask);
 
       const body = createNotification({
         type: 'task',
