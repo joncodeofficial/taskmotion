@@ -63,8 +63,17 @@ export const ListOptionsMenu = ({ onRenameList }: ListOptionsMenuProps) => {
     <>
       <DropdownMenu open={isMenuOpen} onOpenChange={setIsMenuOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant='secondary' size='icon' className='h-9 w-9 rounded-full shrink-0' aria-label='List options'>
-            <EllipsisVertical className='h-4 w-4' strokeWidth={1.8} />
+          <Button
+            variant='ghost'
+            size='icon'
+            className={`inline-flex h-[1.15rem] w-auto shrink-0 items-center justify-center rounded-sm px-0.5 py-0 text-neutral-500 align-middle transition-[opacity,color,background-color] hover:bg-transparent hover:text-neutral-700 dark:text-neutral-300 dark:hover:bg-transparent dark:hover:text-white ${
+              isMenuOpen
+                ? 'opacity-100'
+                : 'pointer-events-none opacity-0 group-hover/list-title:pointer-events-auto group-hover/list-title:opacity-100 group-focus-within/list-title:pointer-events-auto group-focus-within/list-title:opacity-100'
+            }`}
+            aria-label='List options'
+          >
+            <EllipsisVertical className='h-[1.05rem] w-[1.05rem]' strokeWidth={2.1} />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent

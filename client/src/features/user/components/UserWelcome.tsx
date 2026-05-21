@@ -69,8 +69,8 @@ const UserWelcome = () => {
       <h3 className='text-gray-600 dark:text-neutral-300 text-lg font-light'>
         {getGreeting()} Today is {formattedDate}
       </h3>
-      <div className='mt-1 flex items-center gap-3 min-w-0'>
-        <div className='relative min-w-0 flex-1'>
+      <div className='group/list-title mt-1 flex min-w-0 items-center'>
+        <div className='relative min-w-0 max-w-[min(100%,42rem)] flex-none'>
           <input
             ref={inputRef}
             type='text'
@@ -78,14 +78,15 @@ const UserWelcome = () => {
             onChange={(e) => setListName(e.target.value.trimStart())}
             onBlur={handleBlur}
             onKeyDown={(e) => e.key === 'Enter' && e.currentTarget.blur()}
-            className={`w-full rounded-md border border-transparent bg-transparent px-1 text-3xl font-semibold text-gray-900 outline-none transition dark:text-white ${
+            className={`rounded-md border border-transparent bg-transparent px-1 text-3xl font-semibold text-gray-900 outline-none transition dark:text-white ${
               isFocused
                 ? 'opacity-100 border-neutral-200 bg-white dark:border-neutral-700 dark:bg-neutral-900'
                 : 'pointer-events-none opacity-0'
             }`}
+            style={{ width: `${Math.max(listName.length, 1)}ch` }}
           />
           <div
-            className={`absolute inset-0 w-full text-left text-3xl font-semibold text-gray-900 dark:text-white ${
+            className={`absolute inset-0 text-left text-3xl font-semibold text-gray-900 dark:text-white ${
               isFocused ? 'pointer-events-none opacity-0' : 'opacity-100'
             }`}
           >
@@ -96,7 +97,9 @@ const UserWelcome = () => {
             </span>
           </div>
         </div>
-        <ListOptionsMenu onRenameList={startRename} />
+        <div className='ml-0.5 shrink-0'>
+          <ListOptionsMenu onRenameList={startRename} />
+        </div>
       </div>
     </div>
   );
