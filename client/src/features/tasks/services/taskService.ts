@@ -39,6 +39,10 @@ export const deleteTask = async (taskId: string): Promise<void> => {
   await api.delete(`api/tasks/${taskId}`);
 };
 
+export const deleteTasksByListId = async (taskIds: string[]): Promise<void> => {
+  await Promise.all(taskIds.map((taskId) => deleteTask(taskId)));
+};
+
 export const reorderTasks = async (items: { id: string; position: number }[]): Promise<void> => {
   await api.put('api/tasks/reorder', items);
 };

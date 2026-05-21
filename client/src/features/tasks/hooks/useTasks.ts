@@ -4,6 +4,7 @@ import {
   createTask,
   updateTask,
   deleteTask,
+  deleteTasksByListId,
   reorderTasks,
   duplicateTask,
   moveTask,
@@ -99,6 +100,30 @@ export const useDeleteTask = () => {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      queryClient.invalidateQueries({ queryKey: ['lists'] });
+    },
+  });
+};
+
+export const useClearTasks = (listId?: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (tasks: TaskProps[]) => deleteTasksByListId(tasks.map((task) => task.id)),
+    onMutate: async () => {
+      if (!listId) return;
+      await queryClient.cancelQueries({ queryKey: ['tasks', listId] });
+      const previous = queryClient.getQueryData<TaskProps[]>(['tasks', listId]);
+      queryClient.setQueryData<TaskProps[]>(['tasks', listId], []);
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (!listId) return;
+      queryClient.setQueryData(['tasks', listId], context?.previous);
+    },
+    onSettled: () => {
+      if (!listId) return;
+      queryClient.invalidateQueries({ queryKey: ['tasks', listId] });
       queryClient.invalidateQueries({ queryKey: ['lists'] });
     },
   });
