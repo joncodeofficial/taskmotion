@@ -10,6 +10,7 @@ import { UserAuth } from '@/app/context/AuthContext';
 import { CreateInput } from '@/shared/components/CreateInput';
 import { useUpdateNotifications } from '@/shared/hooks/useNotification';
 import { createNotification } from '@/shared/utils/createNotification';
+import { useLogActivity } from '@/shared/hooks/useActivity';
 import { useCreateTask as useCreateTaskMutation, useTasks } from '@/features/tasks/hooks/useTasks';
 
 const CreateTask = () => {
@@ -22,6 +23,7 @@ const CreateTask = () => {
   const [date, setDate] = useState<string | undefined>(undefined);
   const { email } = UserAuth().user;
   const updateNotifications = useUpdateNotifications();
+  const logActivity = useLogActivity();
   const createTaskMutation = useCreateTaskMutation();
 
   const createTask = () => {
@@ -50,6 +52,7 @@ const CreateTask = () => {
       });
 
       updateNotifications.mutate({ email, body });
+      logActivity.mutate(email);
     }
   };
 

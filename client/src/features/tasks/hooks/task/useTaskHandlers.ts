@@ -12,6 +12,7 @@ import { UserAuth } from '@/app/context/AuthContext';
 import { useUpdateNotifications } from '../../../../shared/hooks/useNotification';
 import { createNotification } from '@/shared/utils/createNotification';
 import { useUpdateTask, useDeleteTask, useDuplicateTask, useMoveTask } from '../useTasks';
+import { useLogActivity } from '@/shared/hooks/useActivity';
 import { nanoid } from 'nanoid';
 
 // Hook para manejar los handlers de la tarea
@@ -20,6 +21,7 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
   const { setIsOpen, setTask } = useModalStore();
   const { email } = UserAuth().user;
   const updateNotifications = useUpdateNotifications();
+  const logActivity = useLogActivity();
   const updateTaskMutation = useUpdateTask();
   const deleteTaskMutation = useDeleteTask();
   const duplicateTaskMutation = useDuplicateTask();
@@ -59,6 +61,7 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
       });
 
       updateNotifications.mutate({ email, body });
+      logActivity.mutate(email);
     },
     [listId, task]
   );
@@ -87,6 +90,7 @@ export const useTaskHandlers = (task: TaskProps, state: ReturnType<typeof useTas
         id: task.id,
       });
       updateNotifications.mutate({ email, body });
+      logActivity.mutate(email);
     }
   };
 

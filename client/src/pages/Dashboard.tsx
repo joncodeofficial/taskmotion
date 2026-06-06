@@ -10,12 +10,15 @@ import { Clock } from 'lucide-react';
 import { useNotifications } from '@/shared/hooks/useNotification';
 import { UserAuth } from '@/app/context/AuthContext';
 import { useLists } from '@/features/lists/hooks/useLists';
+import { useActivity } from '@/shared/hooks/useActivity';
+import { ActivityCalendar } from '@/features/tasks/components/ActivityCalendar';
 
 export const Dashboard = () => {
   const { lists } = useLists();
   const { user } = UserAuth();
   const [totalCompleted, setTotalCompleted] = useState(0);
   const { notifications } = useNotifications(user.email || '');
+  const { activity } = useActivity(user.email || '');
   const statsData = useMemo(() => lists && getListCount(lists), [lists]);
 
   useEffect(() => {
@@ -35,7 +38,7 @@ export const Dashboard = () => {
 
   return (
     <div className='py-8 pt-20 lg:pl-[360px] lg:pr-3 px-2'>
-      <h1 className='text-3xl font-bold mb-6 text-neutral-700 dark:text-neutral-50'>Dashboard</h1>
+      <h1 className='text-3xl font-bold mb-4 text-neutral-700 dark:text-neutral-50'>Dashboard</h1>
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
         <Card className='bg-neutral-50 dark:bg-neutral-900'>
           <CardHeader className='flex flex-row items-center justify-between space-y-0 pb-2'>
@@ -104,7 +107,7 @@ export const Dashboard = () => {
             </CardHeader>
             <CardContent>
               <TabsContent value='week'>
-                <ResponsiveContainer className='-mx-10 !w-[calc(100%+2.75rem)] !h-[300px] xl:!h-[350px]'>
+                <ResponsiveContainer className='sm:-mx-10 !w-full sm:!w-[calc(100%+2.75rem)] !h-[250px]'>
                   <BarChart data={statsData?.last7DaysStats}>
                     <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
                     <XAxis dataKey='name' className='text-muted-foreground' />
@@ -135,7 +138,7 @@ export const Dashboard = () => {
                 </ResponsiveContainer>
               </TabsContent>
               <TabsContent value='month'>
-                <ResponsiveContainer className='-mx-10 !w-[calc(100%+2.75rem)] !h-[300px] xl:!h-[350px]'>
+                <ResponsiveContainer className='sm:-mx-10 !w-full sm:!w-[calc(100%+2.75rem)] !h-[250px]'>
                   <BarChart data={statsData?.lastMonthStats}>
                     <CartesianGrid strokeDasharray='3 3' className='stroke-muted' />
                     <XAxis dataKey='name' className='text-muted-foreground' />
@@ -168,12 +171,12 @@ export const Dashboard = () => {
             </CardContent>
           </Tabs>
         </Card>
-        <Card className='bg-neutral-50 dark:bg-neutral-900'>
+        <Card className='bg-neutral-50 dark:bg-neutral-900 overflow-hidden'>
           <CardHeader>
             <CardTitle className='text-neutral-700 dark:text-neutral-50'>Recent Activity</CardTitle>
           </CardHeader>
           <CardContent className='px-1.5 lg:px-2'>
-            <div className='mt-0 overflow-y-auto !h-[300px] xl:!h-[366px]'>
+            <div className='mt-0 overflow-y-auto !h-[250px]'>
               {notifications?.length === 0 && (
                 <div className='flex items-center justify-center h-full'>No recent activity.</div>
               )}
@@ -181,16 +184,16 @@ export const Dashboard = () => {
                 {notifications?.map((notification, index) => (
                   <li
                     key={index}
-                    className='flex items-start p-2 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900'
+                    className='flex items-start p-2 rounded-md border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 overflow-hidden'
                   >
-                    <div className='w-full'>
-                      <div className='flex items-center justify-between'>
-                        <p className='text-neutral-700 dark:text-card-foreground font-medium text-xs lg:text-sm line-clamp-2'>
+                    <div className='w-full min-w-0'>
+                      <div className='flex items-center justify-between gap-2 min-w-0'>
+                        <p className='text-neutral-700 dark:text-card-foreground font-medium text-xs lg:text-sm line-clamp-2 min-w-0 flex-1 break-all'>
                           {notification.message}
                         </p>
                         <Badge
                           text={notification.action + ' ' + notification.type}
-                          className={`ml-2 ${notificationsStyle(notification.action)}`}
+                          className={`shrink-0 ${notificationsStyle(notification.action)}`}
                         />
                       </div>
                       <div className='flex items-center mt-1 gap-1.5 text-xs text-foreground'>
@@ -208,6 +211,9 @@ export const Dashboard = () => {
             </div>
           </CardContent>
         </Card>
+      </div>
+      <div className='mt-4'>
+        <ActivityCalendar data={activity} />
       </div>
     </div>
   );

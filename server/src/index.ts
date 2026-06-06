@@ -6,6 +6,7 @@ import { listApp } from './routes/lists';
 import { taskApp } from './routes/tasks';
 import { aiApp } from './routes/ai';
 import { notificationsApp } from './routes/notifications';
+import { activityApp } from './routes/activity';
 
 const app = new Hono().basePath('/api');
 
@@ -23,5 +24,6 @@ app.route('/tasks', taskApp);
 app.route('/users', userApp);
 app.route('/ai', aiApp);
 app.route('/notifications', notificationsApp);
+app.route('/activity', activityApp);
 
 export default app;
